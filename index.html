@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سرویس اولیا</title>
-    <link rel="manifest" href="manifest.json"> <!-- اضافه شد -->
+    <link rel="manifest" href="manifest.json">
     <style>
         * {
             margin: 0;
@@ -23,7 +23,6 @@
             position: relative;
         }
 
-        /* ===== پس‌زمینه ستاره‌دار ===== */
         .stars {
             position: fixed;
             top: 0;
@@ -47,7 +46,6 @@
             100% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* ===== شهاب‌ها ===== */
         .shooting-star {
             position: fixed;
             width: 3px;
@@ -78,7 +76,6 @@
             100% { opacity: 0; }
         }
 
-        /* ===== کارت اصلی ===== */
         .card {
             position: relative;
             z-index: 1;
@@ -102,7 +99,6 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* ======= عنوان "سرویس من (اولیا)" ======= */
         .service-title {
             font-size: 2.4rem;
             font-weight: 800;
@@ -128,7 +124,6 @@
             font-weight: 300;
         }
 
-        /* ======= خط جداکننده ======= */
         .divider {
             width: 70px;
             height: 2px;
@@ -136,7 +131,6 @@
             margin: 0 auto 35px;
         }
 
-        /* ======= وضعیت API ======= */
         .api-status {
             display: flex;
             align-items: center;
@@ -176,7 +170,6 @@
             font-weight: 800;
         }
 
-        /* ======= پیام خطا ======= */
         .error-msg {
             font-size: 0.95rem;
             color: rgba(255, 255, 255, 0.3);
@@ -193,7 +186,6 @@
             border: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* ======= دکمه ریترای ======= */
         .retry-btn {
             margin-top: 30px;
             padding: 12px 40px;
@@ -214,7 +206,6 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
-        /* ======= ریسپانسیو ======= */
         @media (max-width: 600px) {
             .card { padding: 40px 25px; }
             .service-title { font-size: 1.8rem; }
@@ -224,28 +215,21 @@
 </head>
 <body>
 
-    <!-- ===== ستاره‌ها (JS تولید می‌کنه) ===== -->
     <div class="stars" id="starsContainer"></div>
 
-    <!-- ===== شهاب‌ها ===== -->
     <div class="shooting-star" style="top:10%; left:80%; animation-duration:6s; animation-delay:0s;"></div>
     <div class="shooting-star" style="top:20%; left:60%; animation-duration:8s; animation-delay:3s;"></div>
     <div class="shooting-star" style="top:5%; left:90%; animation-duration:7s; animation-delay:5s;"></div>
     <div class="shooting-star" style="top:15%; left:50%; animation-duration:9s; animation-delay:2s;"></div>
     <div class="shooting-star" style="top:25%; left:70%; animation-duration:5.5s; animation-delay:7s;"></div>
 
-    <!-- ===== کارت اصلی ===== -->
     <div class="card">
-
-        <!-- عنوان "سرویس من (اولیا)" -->
         <div class="service-title">
             سرویس من <span>(اولیا)</span>
         </div>
         <div class="sub-title">●  سرویس اختصاصی  ●</div>
-
         <div class="divider"></div>
 
-        <!-- وضعیت API -->
         <div class="api-status">
             <span class="dot"></span>
             <span class="api-text">
@@ -265,7 +249,6 @@
     </div>
 
     <script>
-        // ===== تولید ستاره‌ها =====
         const container = document.getElementById('starsContainer');
         const starCount = 280;
 
