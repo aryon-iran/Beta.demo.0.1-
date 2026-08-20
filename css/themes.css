@@ -1,0 +1,275 @@
+﻿/* ============================================
+   THEME SYSTEM 3.0
+   ============================================ */
+
+/* ============================================
+   LIGHT THEME (Default)
+   ============================================ */
+[data-theme="light"] {
+    --bg-primary: #F8FAFC;
+    --bg-secondary: #FFFFFF;
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-light: #94A3B8;
+    --border-color: #E2E8F0;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-color: rgba(0, 0, 0, 0.08);
+    --input-bg: #FFFFFF;
+    --nav-bg: rgba(255, 255, 255, 0.8);
+    --footer-bg: #FFFFFF;
+    --code-bg: #F1F5F9;
+    --hover-bg: rgba(79, 70, 229, 0.05);
+}
+
+/* ============================================
+   DARK THEME
+   ============================================ */
+[data-theme="dark"] {
+    --bg-primary: #0F172A;
+    --bg-secondary: #1E293B;
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --text-primary: #F8FAFC;
+    --text-secondary: #CBD5E1;
+    --text-light: #64748B;
+    --border-color: #334155;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(51, 65, 85, 0.3);
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --input-bg: #1E293B;
+    --nav-bg: rgba(15, 23, 42, 0.8);
+    --footer-bg: #1E293B;
+    --code-bg: #1E293B;
+    --hover-bg: rgba(79, 70, 229, 0.1);
+}
+
+/* ============================================
+   NIGHT BLUE THEME
+   ============================================ */
+[data-theme="night-blue"] {
+    --bg-primary: #0A0E27;
+    --bg-secondary: #14183C;
+    --bg-card: rgba(20, 24, 60, 0.7);
+    --text-primary: #E8EDFF;
+    --text-secondary: #A8B5E6;
+    --text-light: #6A7ABD;
+    --border-color: #2A2F5A;
+    --glass-bg: rgba(20, 24, 60, 0.7);
+    --glass-border: rgba(42, 47, 90, 0.3);
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --input-bg: #14183C;
+    --nav-bg: rgba(10, 14, 39, 0.8);
+    --footer-bg: #14183C;
+    --code-bg: #14183C;
+    --hover-bg: rgba(79, 70, 229, 0.15);
+    
+    /* Override primary for night blue */
+    --primary: #818CF8;
+    --primary-dark: #6366F1;
+    --primary-gradient: linear-gradient(135deg, #818CF8, #A78BFA);
+}
+
+/* ============================================
+   AMBER THEME
+   ============================================ */
+[data-theme="amber"] {
+    --bg-primary: #FFF8F0;
+    --bg-secondary: #FFFFFF;
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --text-primary: #1A120B;
+    --text-secondary: #5C4A3A;
+    --text-light: #B0957A;
+    --border-color: #F0E0D0;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(240, 224, 208, 0.5);
+    --shadow-color: rgba(0, 0, 0, 0.06);
+    --input-bg: #FFFFFF;
+    --nav-bg: rgba(255, 248, 240, 0.8);
+    --footer-bg: #FFFFFF;
+    --code-bg: #F5EDE5;
+    --hover-bg: rgba(245, 158, 11, 0.1);
+    
+    /* Override primary for amber */
+    --primary: #D97706;
+    --primary-dark: #B45309;
+    --primary-gradient: linear-gradient(135deg, #F59E0B, #D97706);
+    --primary-light: #FBBF24;
+}
+
+/* ============================================
+   THEME TOGGLE BUTTON
+   ============================================ */
+.theme-toggle-btn {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.theme-toggle-btn .theme-icon {
+    transition: transform var(--transition-base);
+}
+
+.theme-toggle-btn:hover .theme-icon {
+    transform: rotate(30deg);
+}
+
+/* Theme dropdown */
+.theme-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm);
+    box-shadow: var(--shadow-lg);
+    min-width: 160px;
+    display: none;
+    z-index: var(--z-dropdown);
+}
+
+.theme-dropdown.open {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.theme-option:hover {
+    background: var(--hover-bg);
+    color: var(--text-primary);
+}
+
+.theme-option.active {
+    background: var(--hover-bg);
+    color: var(--primary);
+}
+
+.theme-color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.theme-color-dot.light { background: #F8FAFC; }
+.theme-color-dot.dark { background: #0F172A; }
+.theme-color-dot.night-blue { background: #0A0E27; }
+.theme-color-dot.amber { background: #FFF8F0; }
+
+/* ============================================
+   THEME TRANSITION
+   ============================================ */
+.theme-transition {
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ============================================
+   SYSTEM PREFERENCE OVERRIDE
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+    [data-theme="auto"] {
+        --bg-primary: #0F172A;
+        --bg-secondary: #1E293B;
+        --bg-card: rgba(30, 41, 59, 0.7);
+        --text-primary: #F8FAFC;
+        --text-secondary: #CBD5E1;
+        --text-light: #64748B;
+        --border-color: #334155;
+        --glass-bg: rgba(30, 41, 59, 0.7);
+        --glass-border: rgba(51, 65, 85, 0.3);
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --input-bg: #1E293B;
+        --nav-bg: rgba(15, 23, 42, 0.8);
+        --footer-bg: #1E293B;
+        --code-bg: #1E293B;
+        --hover-bg: rgba(79, 70, 229, 0.1);
+    }
+}
+
+/* ============================================
+   THEME SPECIFIC STYLES
+   ============================================ */
+[data-theme="dark"] .glass-premium {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(51, 65, 85, 0.3);
+}
+
+[data-theme="night-blue"] .glass-premium {
+    background: rgba(20, 24, 60, 0.7);
+    border-color: rgba(42, 47, 90, 0.3);
+}
+
+[data-theme="amber"] .glass-premium {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(240, 224, 208, 0.5);
+}
+
+/* Theme specific button styles */
+[data-theme="dark"] .btn-primary {
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+}
+
+[data-theme="night-blue"] .btn-primary {
+    background: linear-gradient(135deg, #818CF8, #A78BFA);
+}
+
+[data-theme="amber"] .btn-primary {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+}
+
+/* Theme specific stat colors */
+[data-theme="night-blue"] .stat-number {
+    color: #A78BFA;
+}
+
+[data-theme="amber"] .stat-number {
+    color: #D97706;
+}
+
+/* Theme specific gradient text */
+[data-theme="night-blue"] .gradient-text {
+    background: linear-gradient(135deg, #818CF8, #A78BFA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+[data-theme="amber"] .gradient-text {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
