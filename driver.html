@@ -1,0 +1,557 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>داشبورد راننده | سرویس من</title>
+    
+    <meta name="description" content="مدیریت سرویس مدرسه برای رانندگان">
+    <meta name="theme-color" content="#7C3AED">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body class="dashboard-page">
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <i class="fas fa-bus"></i>
+                <span>سرویس من</span>
+            </div>
+            <div class="spinner-ring"></div>
+            <p class="preloader-text">در حال بارگذاری داشبورد راننده...</p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    SIDEBAR (Desktop)
+    ========================================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-bus"></i>
+                <span>سرویس من</span>
+                <span class="admin-badge" style="background: var(--secondary);">راننده</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="active" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>داشبورد</span>
+            </a>
+            <a href="#" data-page="route">
+                <i class="fas fa-route"></i>
+                <span>مسیر من</span>
+            </a>
+            <a href="#" data-page="students">
+                <i class="fas fa-child"></i>
+                <span>دانش‌آموزان</span>
+                <span class="badge" id="sidebarStudentsBadge">5</span>
+            </a>
+            <a href="#" data-page="chat">
+                <i class="fas fa-comment-dots"></i>
+                <span>پیام‌ها</span>
+                <span class="badge" id="sidebarChatBadge">0</span>
+            </a>
+            <a href="#" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span>پروفایل</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn btn-danger btn-sm btn-block">
+                <i class="fas fa-sign-out-alt"></i>
+                خروج
+            </button>
+        </div>
+    </aside>
+
+    <!-- ==========================================
+    MAIN CONTENT
+    ========================================== -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="جستجوی دانش‌آموز..." id="searchInput">
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- Theme toggle -->
+                <div class="theme-toggle-wrapper">
+                    <button class="theme-toggle-btn" onclick="document.querySelector('.theme-dropdown').classList.toggle('open')">
+                        <i class="fas fa-sun theme-icon"></i>
+                    </button>
+                    <div class="theme-dropdown">
+                        <div class="theme-option active" data-theme="light" onclick="switchTheme('light')">
+                            <span class="theme-color-dot light"></span> روشن
+                        </div>
+                        <div class="theme-option" data-theme="dark" onclick="switchTheme('dark')">
+                            <span class="theme-color-dot dark"></span> تاریک
+                        </div>
+                        <div class="theme-option" data-theme="night-blue" onclick="switchTheme('night-blue')">
+                            <span class="theme-color-dot night-blue"></span> آبی شب
+                        </div>
+                        <div class="theme-option" data-theme="amber" onclick="switchTheme('amber')">
+                            <span class="theme-color-dot amber"></span> کهربایی
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications -->
+                <div id="notificationContainer"></div>
+                
+                <!-- User Avatar -->
+                <div class="user-avatar" onclick="navigateTo('profile')">
+                    <img src="https://ui-avatars.com/api/?name=علی+رضایی&background=7C3AED&color=fff" alt="User" id="userAvatar">
+                </div>
+            </div>
+        </header>
+
+        <!-- ==========================================
+        PAGE CONTENT
+        ========================================== -->
+        <div class="page-content">
+            
+            <!-- ================================
+            DASHBOARD PAGE
+            ================================ -->
+            <div id="page-dashboard" class="page active">
+                <!-- Driver Status -->
+                <div class="driver-status glass-premium">
+                    <div class="status-indicator">
+                        <div class="status-pulse"></div>
+                        <span style="font-weight: 600; color: var(--warning);">آماده سرویس</span>
+                    </div>
+                    <button class="btn btn-primary btn-lg btn-glow" id="startServiceBtn" onclick="toggleService()">
+                        <i class="fas fa-play"></i>
+                        شروع سرویس
+                    </button>
+                </div>
+
+                <!-- Stats -->
+                <div class="driver-stats grid-3">
+                    <div class="stat-card glass-premium">
+                        <i class="fas fa-child" style="color: #06B6D4; font-size: 24px;"></i>
+                        <div>
+                            <span class="stat-number" id="totalStudents">5</span>
+                            <span class="stat-label">دانش‌آموزان</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-premium">
+                        <i class="fas fa-check-circle" style="color: #10B981; font-size: 24px;"></i>
+                        <div>
+                            <span class="stat-number" id="activeStudents">2</span>
+                            <span class="stat-label">سوار شدند</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-premium">
+                        <i class="fas fa-clock" style="color: #F59E0B; font-size: 24px;"></i>
+                        <div>
+                            <span class="stat-number" id="remainingTime">45:00</span>
+                            <span class="stat-label">زمان باقی‌مانده</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Stop -->
+                <div class="next-stop glass-premium">
+                    <h4>ایستگاه بعدی</h4>
+                    <div class="stop-info">
+                        <div class="stop-name">
+                            <i class="fas fa-map-pin" style="color: #4F46E5;"></i>
+                            <span>میدان آزادی</span>
+                        </div>
+                        <div class="stop-time">
+                            <i class="fas fa-clock"></i>
+                            <span>۵ دقیقه دیگر</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-actions" style="margin-top: 16px;">
+                    <div class="action-card glass-premium" onclick="navigateTo('route')">
+                        <i class="fas fa-route"></i>
+                        <span>مشاهده مسیر</span>
+                        <small>۵ ایستگاه</small>
+                    </div>
+                    <div class="action-card glass-premium" onclick="navigateTo('students')">
+                        <i class="fas fa-child"></i>
+                        <span>لیست دانش‌آموزان</span>
+                        <small>مدیریت وضعیت</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================
+            ROUTE PAGE
+            ================================ -->
+            <div id="page-route" class="page">
+                <div class="page-header">
+                    <h2>مسیر من</h2>
+                    <span class="status-badge active">
+                        <i class="fas fa-circle"></i> فعال
+                    </span>
+                </div>
+                
+                <div class="route-map glass-premium" id="driverRouteMap" style="height: 300px; border-radius: 12px; overflow: hidden; margin-bottom: 16px;"></div>
+                
+                <div class="route-stops glass-premium">
+                    <h4>ایستگاه‌های مسیر</h4>
+                    <div class="stop-list">
+                        <div class="stop-item completed">
+                            <span class="stop-number">1</span>
+                            <span class="stop-name">خانه سارا</span>
+                            <span class="stop-time">۰۷:۳۰</span>
+                            <span class="stop-status"><i class="fas fa-check-circle" style="color: #10B981;"></i></span>
+                        </div>
+                        <div class="stop-item active">
+                            <span class="stop-number">2</span>
+                            <span class="stop-name">میدان آزادی</span>
+                            <span class="stop-time">۰۷:۴۵</span>
+                            <span class="stop-status"><i class="fas fa-spinner fa-spin" style="color: #F59E0B;"></i></span>
+                        </div>
+                        <div class="stop-item">
+                            <span class="stop-number">3</span>
+                            <span class="stop-name">خیابان ولیعصر</span>
+                            <span class="stop-time">۰۸:۰۰</span>
+                            <span class="stop-status"><i class="fas fa-clock" style="color: #6B7280;"></i></span>
+                        </div>
+                        <div class="stop-item">
+                            <span class="stop-number">4</span>
+                            <span class="stop-name">پارک شهر</span>
+                            <span class="stop-time">۰۸:۱۵</span>
+                            <span class="stop-status"><i class="fas fa-clock" style="color: #6B7280;"></i></span>
+                        </div>
+                        <div class="stop-item">
+                            <span class="stop-number">5</span>
+                            <span class="stop-name">مدرسه</span>
+                            <span class="stop-time">۰۸:۳۰</span>
+                            <span class="stop-status"><i class="fas fa-clock" style="color: #6B7280;"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================
+            STUDENTS PAGE
+            ================================ -->
+            <div id="page-students" class="page">
+                <div class="page-header">
+                    <h2>لیست دانش‌آموزان</h2>
+                    <div class="students-stats" id="studentsStats">
+                        <span><i class="fas fa-users"></i> 5 دانش‌آموز</span>
+                        <span><i class="fas fa-check-circle" style="color: var(--success);"></i> 2 سوار شدند</span>
+                    </div>
+                </div>
+                
+                <div class="students-list" id="studentsList">
+                    <!-- Students will be rendered here -->
+                </div>
+            </div>
+
+            <!-- ================================
+            CHAT PAGE
+            ================================ -->
+            <div id="page-chat" class="page">
+                <div class="page-header">
+                    <h2>پیام‌ها</h2>
+                </div>
+                <div id="chatContainer"></div>
+            </div>
+
+            <!-- ================================
+            PROFILE PAGE
+            ================================ -->
+            <div id="page-profile" class="page">
+                <div class="profile-container">
+                    <div class="profile-card glass-premium">
+                        <div class="profile-avatar">
+                            <img src="https://ui-avatars.com/api/?name=علی+رضایی&background=7C3AED&color=fff&size=128" alt="Profile" id="profileAvatar">
+                        </div>
+                        <h2 id="profileName">علی رضایی</h2>
+                        <p class="profile-role">راننده</p>
+                        <div class="profile-details">
+                            <div class="detail-row">
+                                <i class="fas fa-phone"></i>
+                                <span id="profilePhone">۰۹۱۲۳۴۵۶۷۸۹</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-car"></i>
+                                <span id="profileVehicle">سمند — ۱۲۳۴۵ ایران ۱۱</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-school"></i>
+                                <span id="profileSchool">دبستان پسرانه شماره ۱</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-star" style="color: #F59E0B;"></i>
+                                <span id="profileRating">۴.۸ ⭐ (۱۵۶ سفر)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card glass-premium">
+                        <h3>تنظیمات</h3>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <i class="fas fa-moon"></i>
+                                <span>حالت تاریک</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle" onchange="toggleTheme()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <i class="fas fa-bell"></i>
+                                <span>اعلان‌ها</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <i class="fas fa-language"></i>
+                                <span>زبان</span>
+                            </div>
+                            <select>
+                                <option value="fa">فارسی</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================
+    BOTTOM NAVIGATION (Mobile)
+    ========================================== -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="#" class="active" data-page="dashboard">
+            <i class="fas fa-home"></i>
+            <span>خانه</span>
+        </a>
+        <a href="#" data-page="route">
+            <i class="fas fa-route"></i>
+            <span>مسیر</span>
+        </a>
+        <a href="#" data-page="students">
+            <i class="fas fa-child"></i>
+            <span>دانش‌آموزان</span>
+            <span class="badge" id="bottomStudentsBadge">5</span>
+        </a>
+        <a href="#" data-page="chat">
+            <i class="fas fa-comment-dots"></i>
+            <span>پیام‌ها</span>
+        </a>
+        <a href="#" data-page="profile">
+            <i class="fas fa-user"></i>
+            <span>پروفایل</span>
+        </a>
+    </nav>
+
+    <!-- ==========================================
+    TOAST CONTAINER
+    ========================================== -->
+    <div class="toast-container"></div>
+
+    <!-- ==========================================
+    SCRIPTS
+    ========================================== -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/driver.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/chat.js"></script>
+
+    <style>
+        .status-pulse {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--warning);
+            display: inline-block;
+            margin-left: 8px;
+            animation: pulse-dot 1.5s infinite;
+        }
+        .status-pulse.active {
+            background: var(--success);
+        }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        .driver-status {
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .driver-status .btn {
+            min-width: 200px;
+        }
+        .next-stop {
+            padding: 20px;
+            margin-top: 16px;
+        }
+        .next-stop h4 {
+            margin-bottom: 12px;
+        }
+        .stop-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+        }
+        .stop-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        .stop-time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+        .students-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .students-stats i {
+            margin-left: 4px;
+        }
+        .student-item {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-radius: 12px;
+        }
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .student-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .student-info h4 {
+            font-size: 15px;
+            margin: 0;
+        }
+        .student-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .student-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .student-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .student-actions .btn {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        .route-stops {
+            padding: 20px;
+        }
+        .route-stops h4 {
+            margin-bottom: 12px;
+        }
+        .stop-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .stop-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .stop-item:hover {
+            background: var(--hover-bg);
+        }
+        .stop-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .stop-item.completed .stop-number {
+            background: var(--success);
+            color: white;
+        }
+        .stop-item.active .stop-number {
+            background: var(--primary);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        .stop-name {
+            flex: 1;
+        }
+        .stop-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 800);
+        });
+    </script>
+</body>
+</html>

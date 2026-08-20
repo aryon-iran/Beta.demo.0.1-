@@ -1,270 +1,590 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سرویس اولیا</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سرویس من | سرویس مدرسه، هوشمندتر از همیشه</title>
+    
+    <!-- Meta Tags برای SEO -->
+    <meta name="description" content="سرویس من - پلتفرم هوشمند مدیریت سرویس مدارس">
+    <meta name="theme-color" content="#4F46E5">
+    
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0a0e1a;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .star {
-            position: absolute;
-            background: #fff;
-            border-radius: 50%;
-            animation: twinkle var(--duration) infinite alternate;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
-        }
-
-        @keyframes twinkle {
-            0% { opacity: 0.2; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.2); }
-        }
-
-        .shooting-star {
-            position: fixed;
-            width: 3px;
-            height: 3px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.5);
-            animation: shoot linear infinite;
-            z-index: 0;
-        }
-
-        .shooting-star::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 80px;
-            height: 1.5px;
-            background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
-            right: 100%;
-        }
-
-        @keyframes shoot {
-            0% { transform: translate(0, 0) rotate(-35deg); opacity: 0; }
-            5% { opacity: 1; }
-            20% { opacity: 1; }
-            30% { opacity: 0; transform: translate(-400px, 280px) rotate(-35deg); }
-            100% { opacity: 0; }
-        }
-
-        .card {
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 40px;
-            padding: 60px 50px;
-            max-width: 580px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 
-                0 30px 80px rgba(0, 0, 0, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            animation: fadeUp 1s ease-out;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .service-title {
-            font-size: 2.4rem;
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 30px rgba(100, 150, 255, 0.3);
-        }
-
-        .service-title span {
-            background: linear-gradient(135deg, #f093fb, #f5576c, #4facfe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .sub-title {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 35px;
-            font-weight: 300;
-        }
-
-        .divider {
-            width: 70px;
-            height: 2px;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
-            margin: 0 auto 35px;
-        }
-
-        .api-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            padding: 18px 30px;
-            background: rgba(255, 70, 70, 0.08);
-            border: 1px solid rgba(255, 70, 70, 0.2);
-            border-radius: 60px;
-            margin-bottom: 12px;
-            transition: 0.3s;
-        }
-
-        .api-status .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ff4757;
-            box-shadow: 0 0 20px rgba(255, 70, 70, 0.6);
-            animation: pulse-dot 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.7); }
-        }
-
-        .api-status .api-text {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #ff6b7a;
-            letter-spacing: 1px;
-        }
-
-        .api-status .api-text .highlight {
-            color: #ff4757;
-            font-weight: 800;
-        }
-
-        .error-msg {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-top: 20px;
-            letter-spacing: 0.5px;
-        }
-
-        .error-msg code {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.04);
-        }
-
-        .retry-btn {
-            margin-top: 30px;
-            padding: 12px 40px;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 50px;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s;
-            letter-spacing: 1px;
-            font-weight: 300;
-        }
-
-        .retry-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        @media (max-width: 600px) {
-            .card { padding: 40px 25px; }
-            .service-title { font-size: 1.8rem; }
-            .api-status .api-text { font-size: 1rem; }
-        }
-    </style>
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/themes.css">
 </head>
 <body>
-
-    <div class="stars" id="starsContainer"></div>
-
-    <div class="shooting-star" style="top:10%; left:80%; animation-duration:6s; animation-delay:0s;"></div>
-    <div class="shooting-star" style="top:20%; left:60%; animation-duration:8s; animation-delay:3s;"></div>
-    <div class="shooting-star" style="top:5%; left:90%; animation-duration:7s; animation-delay:5s;"></div>
-    <div class="shooting-star" style="top:15%; left:50%; animation-duration:9s; animation-delay:2s;"></div>
-    <div class="shooting-star" style="top:25%; left:70%; animation-duration:5.5s; animation-delay:7s;"></div>
-
-    <div class="card">
-        <div class="service-title">
-            سرویس من <span>(اولیا)</span>
+    <!-- ==========================================
+    PRELOADER
+    ========================================== -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <i class="fas fa-bus"></i>
+                <span>سرویس من</span>
+            </div>
+            <div class="preloader-spinner">
+                <div class="spinner-ring"></div>
+            </div>
+            <p class="preloader-text">بارگذاری...</p>
         </div>
-        <div class="sub-title">●  سرویس اختصاصی  ●</div>
-        <div class="divider"></div>
-
-        <div class="api-status">
-            <span class="dot"></span>
-            <span class="api-text">
-                <span class="highlight">API</span> در دسترس نیست
-            </span>
-        </div>
-
-        <div class="error-msg">
-            <code>❌ 503 Service Unavailable</code>
-            <br><br>
-            لطفاً بعداً مجدداً تلاش کنید
-        </div>
-
-        <button class="retry-btn" onclick="this.innerText='در حال تلاش...'; setTimeout(()=>this.innerText='تلاش مجدد', 1200);">
-            ↻  تلاش مجدد
-        </button>
     </div>
 
-    <script>
-        const container = document.getElementById('starsContainer');
-        const starCount = 280;
+    <!-- ==========================================
+    PARTICLES BACKGROUND
+    ========================================== -->
+    <div id="particles-js" class="particles-bg"></div>
 
-        for (let i = 0; i < starCount; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 3 + 1.5;
-            star.style.width = size + 'px';
-            star.style.height = size + 'px';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-            star.style.animationDelay = (Math.random() * 5) + 's';
-            container.appendChild(star);
-        }
-    </script>
+    <!-- ==========================================
+    NAVIGATION
+    ========================================== -->
+    <nav class="navbar glass" id="navbar" role="navigation">
+        <div class="nav-container">
+            <div class="nav-brand" data-aos="fade-right">
+                <div class="brand-icon">
+                    <i class="fas fa-bus"></i>
+                    <span class="brand-pulse"></span>
+                </div>
+                <span>سرویس من</span>
+                <span class="brand-badge">نسخه ۳.۰</span>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="منوی اصلی">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#features" data-aos="fade-down" data-aos-delay="100">امکانات</a></li>
+                <li><a href="#stats" data-aos="fade-down" data-aos-delay="150">آمار</a></li>
+                <li><a href="#testimonials" data-aos="fade-down" data-aos-delay="200">نظرات</a></li>
+                <li><a href="#faq" data-aos="fade-down" data-aos-delay="250">سوالات</a></li>
+                <li>
+                    <a href="login.html" class="btn btn-primary btn-sm" data-aos="fade-down" data-aos-delay="300">
+                        <i class="fas fa-arrow-left"></i>
+                        ورود
+                    </a>
+                </li>
+                <li>
+                    <a href="register.html" class="btn btn-outline btn-sm" data-aos="fade-down" data-aos-delay="350">
+                        ثبت‌نام
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
+    <!-- ==========================================
+    HERO SECTION
+    ========================================== -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content" data-aos="fade-up" data-aos-delay="100">
+                <div class="hero-badge">
+                    <i class="fas fa-rocket"></i>
+                    <span>نسخه ۳.۰ - جدیدترین امکانات</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    سرویس مدرسه،
+                    <span class="gradient-text" id="hero-typed"></span>
+                </h1>
+                
+                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+                    مدیریت، پیگیری و هماهنگی سرویس مدرسه در یک تجربه ساده و هوشمند.
+                    <br>
+                    <span class="highlight-text">همراه با امکانات پیشرفته و هوش مصنوعی</span>
+                </p>
+                
+                <div class="hero-actions" data-aos="fade-up" data-aos-delay="300">
+                    <a href="login.html" class="btn btn-primary btn-lg btn-glow">
+                        <i class="fas fa-arrow-left"></i>
+                        شروع کنید
+                        <span class="btn-ripple"></span>
+                    </a>
+                    <a href="#features" class="btn btn-outline btn-lg">
+                        <i class="fas fa-play-circle"></i>
+                        مشاهده امکانات
+                    </a>
+                </div>
+                
+                <div class="hero-stats-mini" data-aos="fade-up" data-aos-delay="400">
+                    <div class="mini-stat">
+                        <span class="mini-number">۱۵۰+</span>
+                        <span class="mini-label">مدرسه</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-number">۲,۵۰۰+</span>
+                        <span class="mini-label">دانش‌آموز</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-number">۹۸%</span>
+                        <span class="mini-label">رضایت</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual" data-aos="fade-left" data-aos-delay="200">
+                <div class="mockup-container">
+                    <div class="mockup-3d glass-premium">
+                        <div class="mockup-screen">
+                            <div class="mockup-header">
+                                <div class="mockup-dots">
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <span>سرویس من</span>
+                                <span class="mockup-time">۰۸:۳۰</span>
+                            </div>
+                            <div class="mockup-body">
+                                <div class="mockup-map">
+                                    <div class="mockup-marker pulse-marker"></div>
+                                    <div class="mockup-route animated-route"></div>
+                                    <div class="mockup-car">🚌</div>
+                                </div>
+                                <div class="mockup-info">
+                                    <div class="mockup-status">
+                                        <span class="status-dot live"></span>
+                                        <span>در حال حرکت</span>
+                                    </div>
+                                    <div class="mockup-time-info">
+                                        <i class="fas fa-clock"></i>
+                                        <span>۸ دقیقه</span>
+                                    </div>
+                                </div>
+                                <div class="mockup-students">
+                                    <div class="student-avatars">
+                                        <img src="https://ui-avatars.com/api/?name=سارا&background=4F46E5&color=fff&size=24" alt="">
+                                        <img src="https://ui-avatars.com/api/?name=محمد&background=7C3AED&color=fff&size=24" alt="">
+                                        <img src="https://ui-avatars.com/api/?name=زهرا&background=06B6D4&color=fff&size=24" alt="">
+                                        <span class="more-students">+۵</span>
+                                    </div>
+                                    <span>۱۲ دانش‌آموز</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating elements -->
+                    <div class="float-element float-1">📍</div>
+                    <div class="float-element float-2">🚌</div>
+                    <div class="float-element float-3">⭐</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wave Divider -->
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+                <path fill="currentColor" class="wave-path" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,261.3C672,256,768,224,864,213.3C960,203,1056,213,1152,218.7C1248,224,1344,224,1392,224L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- ==========================================
+    FEATURES SECTION
+    ========================================== -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">✨ امکانات</span>
+                <h2>چرا <span class="gradient-text">سرویس من</span>؟</h2>
+                <p>همه آنچه برای مدیریت هوشمند سرویس مدرسه نیاز دارید</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card glass-premium" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #4F46E5, #7C3AED);">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <div class="feature-number">۰۱</div>
+                    </div>
+                    <h3>ردیابی هوشمند</h3>
+                    <p>موقعیت لحظه‌ای سرویس را روی نقشه ببینید و از مسیر حرکت مطلع شوید</p>
+                    <div class="feature-tag">پیشرفته</div>
+                </div>
+                
+                <div class="feature-card glass-premium" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #7C3AED, #06B6D4);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="feature-number">۰۲</div>
+                    </div>
+                    <h3>مدیریت جامع</h3>
+                    <p>اطلاعات کامل رانندگان، خودروها و وضعیت فعالیت آن‌ها را مدیریت کنید</p>
+                    <div class="feature-tag">حرفه‌ای</div>
+                </div>
+                
+                <div class="feature-card glass-premium" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #06B6D4, #10B981);">
+                            <i class="fas fa-child"></i>
+                        </div>
+                        <div class="feature-number">۰۳</div>
+                    </div>
+                    <h3>مدیریت دانش‌آموزان</h3>
+                    <p>دانش‌آموزان را به سرویس‌ها متصل کنید و وضعیت آن‌ها را پیگیری کنید</p>
+                    <div class="feature-tag">هوشمند</div>
+                </div>
+                
+                <div class="feature-card glass-premium" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #10B981, #F59E0B);">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div class="feature-number">۰۴</div>
+                    </div>
+                    <h3>مدیریت مدارس</h3>
+                    <p>مدیریت کامل مدارس، کلاس‌ها و سرویس‌های هر مدرسه</p>
+                    <div class="feature-tag">کامل</div>
+                </div>
+                
+                <div class="feature-card glass-premium" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #F59E0B, #EF4444);">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="feature-number">۰۵</div>
+                    </div>
+                    <h3>اعلان‌های هوشمند</h3>
+                    <p>اعلان‌های لحظه‌ای درباره وضعیت سرویس، حرکت و تغییرات</p>
+                    <div class="feature-tag">لحظه‌ای</div>
+                </div>
+                
+                <div class="feature-card glass-premium" data-aos="fade-up" data-aos-delay="600">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #EF4444, #4F46E5);">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div class="feature-number">۰۶</div>
+                    </div>
+                    <h3>مسیرهای هوشمند</h3>
+                    <p>طراحی و مدیریت مسیرهای هوشمند با ایستگاه‌های مشخص</p>
+                    <div class="feature-tag">بهینه</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+    STATS SECTION با شمارنده متحرک
+    ========================================== -->
+    <section class="stats premium-stats" id="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item glass-premium" data-aos="zoom-in">
+                    <div class="stat-icon-bg">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <div class="stat-number" data-count="150">۰</div>
+                    <div class="stat-label">مدارس فعال</div>
+                    <div class="stat-bar"><span style="width: 85%"></span></div>
+                </div>
+                
+                <div class="stat-item glass-premium" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="stat-icon-bg">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <div class="stat-number" data-count="2500">۰</div>
+                    <div class="stat-label">دانش‌آموزان</div>
+                    <div class="stat-bar"><span style="width: 92%"></span></div>
+                </div>
+                
+                <div class="stat-item glass-premium" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="stat-icon-bg">
+                        <i class="fas fa-bus"></i>
+                    </div>
+                    <div class="stat-number" data-count="120">۰</div>
+                    <div class="stat-label">سرویس‌های فعال</div>
+                    <div class="stat-bar"><span style="width: 78%"></span></div>
+                </div>
+                
+                <div class="stat-item glass-premium" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-icon-bg">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" data-count="85">۰</div>
+                    <div class="stat-label">رانندگان فعال</div>
+                    <div class="stat-bar"><span style="width: 70%"></span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+    TESTIMONIALS SECTION
+    ========================================== -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">💬 نظرات کاربران</span>
+                <h2>آنچه کاربران <span class="gradient-text">می‌گویند</span></h2>
+                <p>تجربه واقعی کاربران از سرویس من</p>
+            </div>
+            
+            <div class="testimonials-slider swiper" data-aos="fade-up">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="testimonial-card glass-premium">
+                            <div class="testimonial-header">
+                                <img src="https://ui-avatars.com/api/?name=علی+رضایی&background=4F46E5&color=fff&size=48" alt="">
+                                <div>
+                                    <h4>علی رضایی</h4>
+                                    <span>والدین</span>
+                                </div>
+                                <div class="testimonial-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <p class="testimonial-text">
+                                "سرویس من واقعاً زندگی ما را متحول کرد. الان می‌توانم لحظه به لحظه سرویس فرزندم را پیگیری کنم."
+                            </p>
+                            <div class="testimonial-footer">
+                                <span class="testimonial-date">۲ هفته پیش</span>
+                                <i class="fas fa-quote-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="swiper-slide">
+                        <div class="testimonial-card glass-premium">
+                            <div class="testimonial-header">
+                                <img src="https://ui-avatars.com/api/?name=مدیر+مدرسه&background=10B981&color=fff&size=48" alt="">
+                                <div>
+                                    <h4>مدیر مدرسه شماره ۱</h4>
+                                    <span>مدیر مدرسه</span>
+                                </div>
+                                <div class="testimonial-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <p class="testimonial-text">
+                                "بهترین سیستم مدیریت سرویس که تا حالا دیدم. مدیریت دانش‌آموزان و رانندگان خیلی راحت شده."
+                            </p>
+                            <div class="testimonial-footer">
+                                <span class="testimonial-date">۱ ماه پیش</span>
+                                <i class="fas fa-quote-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="swiper-slide">
+                        <div class="testimonial-card glass-premium">
+                            <div class="testimonial-header">
+                                <img src="https://ui-avatars.com/api/?name=محمد+کریمی&background=7C3AED&color=fff&size=48" alt="">
+                                <div>
+                                    <h4>محمد کریمی</h4>
+                                    <span>راننده</span>
+                                </div>
+                                <div class="testimonial-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                            <p class="testimonial-text">
+                                "به عنوان راننده، مدیریت سرویس و دانش‌آموزان با این سیستم خیلی آسان شده. عالی است!"
+                            </p>
+                            <div class="testimonial-footer">
+                                <span class="testimonial-date">۳ هفته پیش</span>
+                                <i class="fas fa-quote-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+    FAQ SECTION با انیمیشن
+    ========================================== -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">❓ سوالات متداول</span>
+                <h2>پاسخ به <span class="gradient-text">سوالات</span> شما</h2>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item glass-premium" data-aos="fade-up" data-aos-delay="100">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <div class="faq-q">
+                            <i class="fas fa-question-circle"></i>
+                            <span>چگونه می‌توانم سرویس فرزندم را ردیابی کنم؟</span>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>با ورود به پنل والدین، می‌توانید موقعیت لحظه‌ای سرویس فرزندتان را روی نقشه ببینید و از زمان تقریبی رسیدن مطلع شوید. همچنین اعلان‌های لحظه‌ای دریافت می‌کنید.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item glass-premium" data-aos="fade-up" data-aos-delay="200">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <div class="faq-q">
+                            <i class="fas fa-question-circle"></i>
+                            <span>آیا رانندگان هم به این سیستم دسترسی دارند؟</span>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>بله، رانندگان دارای پنل اختصاصی هستند که می‌توانند وضعیت سرویس، مسیر و لیست دانش‌آموزان را مدیریت کنند و وضعیت سوار شدن را ثبت کنند.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item glass-premium" data-aos="fade-up" data-aos-delay="300">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <div class="faq-q">
+                            <i class="fas fa-question-circle"></i>
+                            <span>هزینه استفاده از سرویس من چقدر است؟</span>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>سرویس من با مدل اشتراکی کار می‌کند. برای اطلاعات دقیق قیمت‌گذاری، با تیم فروش ما تماس بگیرید. طرح رایگان نیز برای مدارس کوچک وجود دارد.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item glass-premium" data-aos="fade-up" data-aos-delay="400">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <div class="faq-q">
+                            <i class="fas fa-question-circle"></i>
+                            <span>آیا داده‌های من امن هستند؟</span>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>بله، تمام داده‌ها با رمزنگاری پیشرفته محافظت می‌شوند و سیستم ما از استانداردهای امنیتی روز دنیا پیروی می‌کند. اطلاعات شما در سرورهای امن ذخیره می‌شود.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+    CTA SECTION
+    ========================================== -->
+    <section class="cta-section" data-aos="fade-up">
+        <div class="container">
+            <div class="cta-content glass-premium">
+                <h2>آماده‌اید تا سرویس مدرسه را <span class="gradient-text">هوشمندتر</span> کنید؟</h2>
+                <p>همین حالا ثبت‌نام کنید و از امکانات پیشرفته سرویس من استفاده کنید</p>
+                <div class="cta-buttons">
+                    <a href="register.html" class="btn btn-primary btn-lg btn-glow">
+                        <i class="fas fa-rocket"></i>
+                        شروع کنید
+                    </a>
+                    <a href="login.html" class="btn btn-outline btn-lg">
+                        <i class="fas fa-arrow-left"></i>
+                        ورود
+                    </a>
+                </div>
+                <div class="cta-features">
+                    <span><i class="fas fa-check-circle"></i> نصب آسان</span>
+                    <span><i class="fas fa-check-circle"></i> پشتیبانی ۲۴/۷</span>
+                    <span><i class="fas fa-check-circle"></i> امنیت بالا</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+    FOOTER
+    ========================================== -->
+    <footer class="footer premium-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-bus"></i>
+                        <span>سرویس من</span>
+                    </div>
+                    <p>سرویس مدرسه، هوشمندتر از همیشه</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>دسترسی سریع</h4>
+                    <ul>
+                        <li><a href="#features">امکانات</a></li>
+                        <li><a href="#stats">آمار</a></li>
+                        <li><a href="#testimonials">نظرات</a></li>
+                        <li><a href="#faq">سوالات</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>ارتباط با ما</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-phone"></i> ۰۲۱-۱۲۳۴۵۶۷۸</a></li>
+                        <li><a href="#"><i class="fas fa-envelope"></i> info@myservice.ir</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> تهران، خیابان ولیعصر</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-newsletter">
+                    <h4>خبرنامه</h4>
+                    <p>برای دریافت آخرین اخبار ثبت‌نام کنید</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="ایمیل خود را وارد کنید">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; ۲۰۲۶ سرویس من. تمام حقوق محفوظ است.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">حریم خصوصی</a>
+                    <a href="#">قوانین</a>
+                    <a href="#">پشتیبانی</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+    SCRIPTS
+    ========================================== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
 </body>
 </html>

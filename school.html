@@ -1,0 +1,655 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>داشبورد مدرسه | سرویس من</title>
+    
+    <meta name="description" content="مدیریت سرویس مدرسه برای مدیران مدارس">
+    <meta name="theme-color" content="#10B981">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.css">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body class="dashboard-page">
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <i class="fas fa-bus"></i>
+                <span>سرویس من</span>
+            </div>
+            <div class="spinner-ring"></div>
+            <p class="preloader-text">در حال بارگذاری داشبورد مدرسه...</p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    SIDEBAR (Desktop)
+    ========================================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-bus"></i>
+                <span>سرویس من</span>
+                <span class="admin-badge" style="background: var(--success);">مدیر مدرسه</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="active" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>داشبورد</span>
+            </a>
+            <a href="#" data-page="students">
+                <i class="fas fa-child"></i>
+                <span>دانش‌آموزان</span>
+                <span class="badge" id="sidebarStudentsBadge">250</span>
+            </a>
+            <a href="#" data-page="drivers">
+                <i class="fas fa-users"></i>
+                <span>رانندگان</span>
+                <span class="badge" id="sidebarDriversBadge">12</span>
+            </a>
+            <a href="#" data-page="services">
+                <i class="fas fa-bus"></i>
+                <span>سرویس‌ها</span>
+                <span class="badge" id="sidebarServicesBadge">8</span>
+            </a>
+            <a href="#" data-page="requests">
+                <i class="fas fa-clipboard-list"></i>
+                <span>درخواست‌ها</span>
+                <span class="badge" id="sidebarRequestsBadge">5</span>
+            </a>
+            <a href="#" data-page="reports">
+                <i class="fas fa-chart-bar"></i>
+                <span>گزارش‌ها</span>
+            </a>
+            <a href="#" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span>پروفایل</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn btn-danger btn-sm btn-block">
+                <i class="fas fa-sign-out-alt"></i>
+                خروج
+            </button>
+        </div>
+    </aside>
+
+    <!-- ==========================================
+    MAIN CONTENT
+    ========================================== -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="جستجو در مدرسه..." id="searchInput">
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- Theme toggle -->
+                <div class="theme-toggle-wrapper">
+                    <button class="theme-toggle-btn" onclick="document.querySelector('.theme-dropdown').classList.toggle('open')">
+                        <i class="fas fa-sun theme-icon"></i>
+                    </button>
+                    <div class="theme-dropdown">
+                        <div class="theme-option active" data-theme="light" onclick="switchTheme('light')">
+                            <span class="theme-color-dot light"></span> روشن
+                        </div>
+                        <div class="theme-option" data-theme="dark" onclick="switchTheme('dark')">
+                            <span class="theme-color-dot dark"></span> تاریک
+                        </div>
+                        <div class="theme-option" data-theme="night-blue" onclick="switchTheme('night-blue')">
+                            <span class="theme-color-dot night-blue"></span> آبی شب
+                        </div>
+                        <div class="theme-option" data-theme="amber" onclick="switchTheme('amber')">
+                            <span class="theme-color-dot amber"></span> کهربایی
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications -->
+                <div id="notificationContainer"></div>
+                
+                <!-- User Avatar -->
+                <div class="user-avatar" onclick="navigateTo('profile')">
+                    <img src="https://ui-avatars.com/api/?name=مدیر+مدرسه&background=10B981&color=fff" alt="User" id="userAvatar">
+                </div>
+            </div>
+        </header>
+
+        <!-- ==========================================
+        PAGE CONTENT
+        ========================================== -->
+        <div class="page-content">
+            
+            <!-- ================================
+            DASHBOARD PAGE
+            ================================ -->
+            <div id="page-dashboard" class="page active">
+                <div class="welcome-section">
+                    <h2>سلام، مدیر محترم 👋</h2>
+                    <p>خلاصه وضعیت امروز مدرسه</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid grid-4">
+                    <div class="stat-card glass-premium">
+                        <div class="stat-icon" style="background: rgba(79, 70, 229, 0.1);">
+                            <i class="fas fa-child" style="color: #4F46E5;"></i>
+                        </div>
+                        <div>
+                            <span class="stat-number" id="statStudents">250</span>
+                            <span class="stat-label">دانش‌آموزان</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-premium">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1);">
+                            <i class="fas fa-users" style="color: #10B981;"></i>
+                        </div>
+                        <div>
+                            <span class="stat-number" id="statDrivers">12</span>
+                            <span class="stat-label">رانندگان فعال</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-premium">
+                        <div class="stat-icon" style="background: rgba(6, 182, 212, 0.1);">
+                            <i class="fas fa-bus" style="color: #06B6D4;"></i>
+                        </div>
+                        <div>
+                            <span class="stat-number" id="statServices">8</span>
+                            <span class="stat-label">سرویس فعال</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-premium">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1);">
+                            <i class="fas fa-clipboard-list" style="color: #F59E0B;"></i>
+                        </div>
+                        <div>
+                            <span class="stat-number" id="statRequests">5</span>
+                            <span class="stat-label">درخواست جدید</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card glass-premium">
+                        <h4>سرویس‌های فعال امروز</h4>
+                        <canvas id="activeServicesChart"></canvas>
+                    </div>
+                    <div class="chart-card glass-premium">
+                        <h4>وضعیت سرویس‌ها</h4>
+                        <canvas id="serviceStatusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="recent-activities glass-premium">
+                    <h4>فعالیت‌های اخیر</h4>
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item">
+                            <span class="activity-time">۰۸:۳۰</span>
+                            <span>سرویس شماره ۳ حرکت خود را آغاز کرد</span>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-time">۰۸:۱۵</span>
+                            <span>دانش‌آموز جدید به کلاس سوم اضافه شد</span>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-time">۰۸:۰۰</span>
+                            <span>درخواست جدید سرویس ثبت شد</span>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-time">۰۷:۴۵</span>
+                            <span>سرویس شماره ۱ به مدرسه رسید</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================
+            STUDENTS PAGE
+            ================================ -->
+            <div id="page-students" class="page">
+                <div class="page-header">
+                    <h2>مدیریت دانش‌آموزان</h2>
+                    <button class="btn btn-primary" onclick="openAddStudentModal()">
+                        <i class="fas fa-plus"></i>
+                        افزودن دانش‌آموز
+                    </button>
+                </div>
+                
+                <div class="table-container glass-premium">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>نام</th>
+                                <th>کلاس</th>
+                                <th>سرویس</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Students will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================================
+            DRIVERS PAGE
+            ================================ -->
+            <div id="page-drivers" class="page">
+                <div class="page-header">
+                    <h2>مدیریت رانندگان</h2>
+                    <button class="btn btn-primary" onclick="openAddDriverModal()">
+                        <i class="fas fa-plus"></i>
+                        افزودن راننده
+                    </button>
+                </div>
+                
+                <div class="table-container glass-premium">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>نام</th>
+                                <th>خودرو</th>
+                                <th>سرویس</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="driversTableBody">
+                            <!-- Drivers will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================================
+            SERVICES PAGE
+            ================================ -->
+            <div id="page-services" class="page">
+                <div class="page-header">
+                    <h2>مدیریت سرویس‌ها</h2>
+                    <button class="btn btn-primary" onclick="openAddServiceModal()">
+                        <i class="fas fa-plus"></i>
+                        ایجاد سرویس
+                    </button>
+                </div>
+                
+                <div class="services-grid" id="servicesGrid">
+                    <!-- Services will be rendered here -->
+                </div>
+            </div>
+
+            <!-- ================================
+            REQUESTS PAGE
+            ================================ -->
+            <div id="page-requests" class="page">
+                <div class="page-header">
+                    <h2>درخواست‌های جدید</h2>
+                    <span class="status-badge warning" id="requestsCount">۵ درخواست</span>
+                </div>
+                
+                <div class="requests-list" id="requestsList">
+                    <!-- Requests will be rendered here -->
+                </div>
+            </div>
+
+            <!-- ================================
+            REPORTS PAGE
+            ================================ -->
+            <div id="page-reports" class="page">
+                <div id="reportsContainer"></div>
+            </div>
+
+            <!-- ================================
+            PROFILE PAGE
+            ================================ -->
+            <div id="page-profile" class="page">
+                <div class="profile-container">
+                    <div class="profile-card glass-premium">
+                        <div class="profile-avatar">
+                            <img src="https://ui-avatars.com/api/?name=مدیر+مدرسه&background=10B981&color=fff&size=128" alt="Profile" id="profileAvatar">
+                        </div>
+                        <h2 id="profileName">مدیر مدرسه</h2>
+                        <p class="profile-role">مدیر مدرسه</p>
+                        <div class="profile-details">
+                            <div class="detail-row">
+                                <i class="fas fa-phone"></i>
+                                <span id="profilePhone">۰۹۱۲۳۴۵۶۷۸۹</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-school"></i>
+                                <span id="profileSchool">دبستان پسرانه شماره ۱</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span id="profileAddress">تهران، خیابان ولیعصر</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card glass-premium">
+                        <h3>تنظیمات</h3>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <i class="fas fa-moon"></i>
+                                <span>حالت تاریک</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle" onchange="toggleTheme()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <i class="fas fa-bell"></i>
+                                <span>اعلان‌ها</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================
+    BOTTOM NAVIGATION (Mobile)
+    ========================================== -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="#" class="active" data-page="dashboard">
+            <i class="fas fa-home"></i>
+            <span>خانه</span>
+        </a>
+        <a href="#" data-page="students">
+            <i class="fas fa-child"></i>
+            <span>دانش‌آموزان</span>
+        </a>
+        <a href="#" data-page="drivers">
+            <i class="fas fa-users"></i>
+            <span>رانندگان</span>
+        </a>
+        <a href="#" data-page="services">
+            <i class="fas fa-bus"></i>
+            <span>سرویس‌ها</span>
+        </a>
+        <a href="#" data-page="requests">
+            <i class="fas fa-clipboard-list"></i>
+            <span>درخواست‌ها</span>
+            <span class="badge" id="bottomRequestsBadge">5</span>
+        </a>
+    </nav>
+
+    <!-- ==========================================
+    MODALS
+    ========================================== -->
+    
+    <!-- Add Student Modal -->
+    <div class="modal" id="addStudentModal">
+        <div class="modal-overlay" onclick="closeModal('addStudentModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>افزودن دانش‌آموز جدید</h3>
+                <button class="modal-close" onclick="closeModal('addStudentModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addStudentForm" onsubmit="submitAddStudent(event)">
+                <div class="form-group">
+                    <label>نام و نام خانوادگی</label>
+                    <input type="text" id="studentName" placeholder="نام دانش‌آموز" required>
+                </div>
+                <div class="form-group">
+                    <label>کلاس</label>
+                    <input type="text" id="studentClass" placeholder="مثال: سوم" required>
+                </div>
+                <div class="form-group">
+                    <label>سرویس</label>
+                    <select id="studentService" required>
+                        <option value="">انتخاب سرویس...</option>
+                        <option value="سرویس ۱">سرویس ۱</option>
+                        <option value="سرویس ۲">سرویس ۲</option>
+                        <option value="سرویس ۳">سرویس ۳</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">افزودن دانش‌آموز</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Driver Modal -->
+    <div class="modal" id="addDriverModal">
+        <div class="modal-overlay" onclick="closeModal('addDriverModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>افزودن راننده جدید</h3>
+                <button class="modal-close" onclick="closeModal('addDriverModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addDriverForm" onsubmit="submitAddDriver(event)">
+                <div class="form-group">
+                    <label>نام و نام خانوادگی</label>
+                    <input type="text" id="driverName" placeholder="نام راننده" required>
+                </div>
+                <div class="form-group">
+                    <label>خودرو</label>
+                    <input type="text" id="driverVehicle" placeholder="مثال: سمند - ۱۲۳۴۵" required>
+                </div>
+                <div class="form-group">
+                    <label>سرویس</label>
+                    <select id="driverService" required>
+                        <option value="">انتخاب سرویس...</option>
+                        <option value="سرویس ۱">سرویس ۱</option>
+                        <option value="سرویس ۲">سرویس ۲</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">افزودن راننده</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Service Modal -->
+    <div class="modal" id="addServiceModal">
+        <div class="modal-overlay" onclick="closeModal('addServiceModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>ایجاد سرویس جدید</h3>
+                <button class="modal-close" onclick="closeModal('addServiceModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addServiceForm" onsubmit="submitAddService(event)">
+                <div class="form-group">
+                    <label>نام سرویس</label>
+                    <input type="text" id="serviceName" placeholder="نام سرویس" required>
+                </div>
+                <div class="form-group">
+                    <label>راننده</label>
+                    <select id="serviceDriver" required>
+                        <option value="">انتخاب راننده...</option>
+                        <option value="علی رضایی">علی رضایی</option>
+                        <option value="محمد کریمی">محمد کریمی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>مسیر</label>
+                    <select id="serviceRoute" required>
+                        <option value="">انتخاب مسیر...</option>
+                        <option value="مسیر شمال">مسیر شمال</option>
+                        <option value="مسیر جنوب">مسیر جنوب</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">ایجاد سرویس</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    TOAST CONTAINER
+    ========================================== -->
+    <div class="toast-container"></div>
+
+    <!-- ==========================================
+    SCRIPTS
+    ========================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/school.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/reports.js"></script>
+
+    <style>
+        .recent-activities {
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .recent-activities h4 {
+            margin-bottom: 12px;
+        }
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-time {
+            color: var(--text-secondary);
+            font-weight: 600;
+            min-width: 50px;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .service-card {
+            padding: 20px;
+        }
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .service-header h4 {
+            margin: 0;
+        }
+        .service-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .service-info p {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            margin: 0;
+        }
+        .service-info i {
+            color: var(--primary);
+            width: 20px;
+        }
+        .requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .request-item {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 12px;
+        }
+        .request-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+        }
+        .request-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 2px 0;
+        }
+        .request-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .table-container {
+            padding: 16px;
+            overflow-x: auto;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .data-table th {
+            text-align: right;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
+        }
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .data-table tbody tr:hover {
+            background: var(--hover-bg);
+        }
+        .data-table .btn {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+        .data-table .btn i {
+            font-size: 14px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 800);
+        });
+    </script>
+</body>
+</html>

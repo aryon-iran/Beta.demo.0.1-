@@ -1,0 +1,1234 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>داشبورد مدیریت | سرویس من</title>
+    
+    <meta name="description" content="مدیریت کامل سیستم سرویس من">
+    <meta name="theme-color" content="#EF4444">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.css">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body class="dashboard-page">
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <i class="fas fa-bus"></i>
+                <span>سرویس من</span>
+            </div>
+            <div class="spinner-ring"></div>
+            <p class="preloader-text">در حال بارگذاری داشبورد مدیریت...</p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    SIDEBAR (Desktop)
+    ========================================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-bus"></i>
+                <span>سرویس من</span>
+                <span class="admin-badge" style="background: var(--danger);">ادمین</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="active" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>داشبورد</span>
+            </a>
+            <a href="#" data-page="schools">
+                <i class="fas fa-school"></i>
+                <span>مدارس</span>
+                <span class="badge" id="sidebarSchoolsBadge">150</span>
+            </a>
+            <a href="#" data-page="parents">
+                <i class="fas fa-user-friends"></i>
+                <span>والدین</span>
+                <span class="badge" id="sidebarParentsBadge">1,200</span>
+            </a>
+            <a href="#" data-page="students">
+                <i class="fas fa-child"></i>
+                <span>دانش‌آموزان</span>
+                <span class="badge" id="sidebarStudentsBadge">2,500</span>
+            </a>
+            <a href="#" data-page="drivers">
+                <i class="fas fa-users"></i>
+                <span>رانندگان</span>
+                <span class="badge" id="sidebarDriversBadge">85</span>
+            </a>
+            <a href="#" data-page="services">
+                <i class="fas fa-bus"></i>
+                <span>سرویس‌ها</span>
+                <span class="badge" id="sidebarServicesBadge">120</span>
+            </a>
+            <a href="#" data-page="reports">
+                <i class="fas fa-chart-bar"></i>
+                <span>گزارش‌ها</span>
+            </a>
+            <a href="#" data-page="settings">
+                <i class="fas fa-cog"></i>
+                <span>تنظیمات</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn btn-danger btn-sm btn-block">
+                <i class="fas fa-sign-out-alt"></i>
+                خروج
+            </button>
+        </div>
+    </aside>
+
+    <!-- ==========================================
+    MAIN CONTENT
+    ========================================== -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="جستجوی جهانی..." id="searchInput" onkeyup="filterAdminTable(this.value)">
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- Theme toggle -->
+                <div class="theme-toggle-wrapper">
+                    <button class="theme-toggle-btn" onclick="document.querySelector('.theme-dropdown').classList.toggle('open')">
+                        <i class="fas fa-sun theme-icon"></i>
+                    </button>
+                    <div class="theme-dropdown">
+                        <div class="theme-option active" data-theme="light" onclick="switchTheme('light')">
+                            <span class="theme-color-dot light"></span> روشن
+                        </div>
+                        <div class="theme-option" data-theme="dark" onclick="switchTheme('dark')">
+                            <span class="theme-color-dot dark"></span> تاریک
+                        </div>
+                        <div class="theme-option" data-theme="night-blue" onclick="switchTheme('night-blue')">
+                            <span class="theme-color-dot night-blue"></span> آبی شب
+                        </div>
+                        <div class="theme-option" data-theme="amber" onclick="switchTheme('amber')">
+                            <span class="theme-color-dot amber"></span> کهربایی
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications -->
+                <div id="notificationContainer"></div>
+                
+                <!-- User Avatar -->
+                <div class="user-avatar" onclick="navigateTo('settings')">
+                    <img src="https://ui-avatars.com/api/?name=مدیر+سیستم&background=EF4444&color=fff" alt="User" id="userAvatar">
+                </div>
+            </div>
+        </header>
+
+        <!-- ==========================================
+        PAGE CONTENT
+        ========================================== -->
+        <div class="page-content">
+            
+            <!-- ================================
+            DASHBOARD PAGE
+            ================================ -->
+            <div id="page-dashboard" class="page active">
+                <div class="welcome-section">
+                    <h2>سلام، مدیر سیستم 👋</h2>
+                    <p>خلاصه کلی وضعیت پلتفرم</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid grid-4">
+                    <div class="stat-card glass-premium" data-aos="fade-up" data-aos-delay="0">
+                        <div class="stat-icon" style="background: rgba(79, 70, 229, 0.1);">
+                            <i class="fas fa-school" style="color: #4F46E5;"></i>
+                        </div>
+                        <div>
+                            <span class="stat-number" id="statSchools">150</span>
+                            <span class="stat-label">مدارس</span>
+                            <div class="stat-change positive">+۱۲ این ماه</div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-premium" data-aos="fade-up" data-aos-delay="100">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1);">
+                            <i class="fas fa-user-friends" style="color: #10B981;"></i>
+                        </div>
+                        <div>
+                            <span class="stat-number" id="statParents">1,200</span>
+                            <span class="stat-label">والدین</span>
+                            <div class="stat-change positive">+۸۵ این ماه</div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-premium" data-aos="fade-up" data-aos-delay="200">
+                        <div class="stat-icon" style="background: rgba(6, 182, 212, 0.1);">
+                            <i class="fas fa-child" style="color: #06B6D4;"></i>
+                        </div>
+                        <div>
+                            <span class="stat-number" id="statStudents">2,500</span>
+                            <span class="stat-label">دانش‌آموزان</span>
+                            <div class="stat-change positive">+۱۵۰ این ماه</div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-premium" data-aos="fade-up" data-aos-delay="300">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1);">
+                            <i class="fas fa-users" style="color: #F59E0B;"></i>
+                        </div>
+                        <div>
+                            <span class="stat-number" id="statDrivers">85</span>
+                            <span class="stat-label">رانندگان</span>
+                            <div class="stat-change positive">+۸ این ماه</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card glass-premium" data-aos="fade-up" data-aos-delay="100">
+                        <h4>رشد کاربران <span style="font-size: 12px; color: var(--text-secondary); font-weight: 400;">(۶ هفته اخیر)</span></h4>
+                        <canvas id="userGrowthChart"></canvas>
+                    </div>
+                    <div class="chart-card glass-premium" data-aos="fade-up" data-aos-delay="200">
+                        <h4>وضعیت سرویس‌ها</h4>
+                        <canvas id="adminServiceStatusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="table-container glass-premium" style="margin-top: 20px;" data-aos="fade-up" data-aos-delay="300">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h4 style="margin: 0;">آخرین فعالیت‌ها</h4>
+                        <button class="btn btn-sm btn-outline" onclick="refreshActivities()">
+                            <i class="fas fa-sync"></i> بروزرسانی
+                        </button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>کاربر</th>
+                                <th>عمل</th>
+                                <th>زمان</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminActivitiesBody">
+                            <!-- Activities will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================================
+            SCHOOLS PAGE
+            ================================ -->
+            <div id="page-schools" class="page">
+                <div class="page-header">
+                    <h2>مدیریت مدارس</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline btn-sm" onclick="exportData('schools')">
+                            <i class="fas fa-download"></i> خروجی
+                        </button>
+                        <button class="btn btn-primary" onclick="openAddSchoolModal()">
+                            <i class="fas fa-plus"></i>
+                            افزودن مدرسه
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container glass-premium">
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <div class="filter-group">
+                            <label>جستجو:</label>
+                            <input type="text" placeholder="نام مدرسه..." class="filter-input" onkeyup="filterTable('schools', this.value)">
+                        </div>
+                        <div class="filter-group">
+                            <label>وضعیت:</label>
+                            <select class="filter-select" onchange="filterTable('schools', null, this.value)">
+                                <option value="all">همه</option>
+                                <option value="active">فعال</option>
+                                <option value="inactive">غیرفعال</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>مرتب‌سازی:</label>
+                            <select class="filter-select" onchange="sortTable('schools', this.value)">
+                                <option value="name">نام</option>
+                                <option value="students">تعداد دانش‌آموزان</option>
+                                <option value="services">تعداد سرویس‌ها</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>نام مدرسه</th>
+                                <th>کد</th>
+                                <th>دانش‌آموزان</th>
+                                <th>سرویس‌ها</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schoolsTableBody">
+                            <!-- Schools will be rendered here -->
+                        </tbody>
+                    </table>
+                    <div class="table-pagination">
+                        <button class="btn btn-sm btn-outline" onclick="changePage('schools', -1)">قبلی</button>
+                        <span id="schoolsPageInfo">صفحه ۱ از ۳</span>
+                        <button class="btn btn-sm btn-outline" onclick="changePage('schools', 1)">بعدی</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================
+            PARENTS PAGE
+            ================================ -->
+            <div id="page-parents" class="page">
+                <div class="page-header">
+                    <h2>مدیریت والدین</h2>
+                    <button class="btn btn-primary" onclick="openAddParentModal()">
+                        <i class="fas fa-plus"></i>
+                        افزودن والد
+                    </button>
+                </div>
+                
+                <div class="table-container glass-premium">
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <div class="filter-group">
+                            <label>جستجو:</label>
+                            <input type="text" placeholder="نام یا شماره..." class="filter-input" onkeyup="filterTable('parents', this.value)">
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>نام</th>
+                                <th>شماره موبایل</th>
+                                <th>تعداد فرزندان</th>
+                                <th>مدرسه</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="parentsTableBody">
+                            <!-- Parents will be rendered here -->
+                        </tbody>
+                    </table>
+                    <div class="table-pagination">
+                        <button class="btn btn-sm btn-outline" onclick="changePage('parents', -1)">قبلی</button>
+                        <span id="parentsPageInfo">صفحه ۱ از ۵</span>
+                        <button class="btn btn-sm btn-outline" onclick="changePage('parents', 1)">بعدی</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================
+            STUDENTS PAGE
+            ================================ -->
+            <div id="page-students" class="page">
+                <div class="page-header">
+                    <h2>مدیریت دانش‌آموزان</h2>
+                    <button class="btn btn-primary" onclick="openAddStudentAdminModal()">
+                        <i class="fas fa-plus"></i>
+                        افزودن دانش‌آموز
+                    </button>
+                </div>
+                
+                <div class="table-container glass-premium">
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <div class="filter-group">
+                            <label>جستجو:</label>
+                            <input type="text" placeholder="نام یا کلاس..." class="filter-input" onkeyup="filterTable('students', this.value)">
+                        </div>
+                        <div class="filter-group">
+                            <label>وضعیت:</label>
+                            <select class="filter-select" onchange="filterTable('students', null, this.value)">
+                                <option value="all">همه</option>
+                                <option value="active">فعال</option>
+                                <option value="pending">در انتظار</option>
+                                <option value="inactive">غیرفعال</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>نام</th>
+                                <th>کلاس</th>
+                                <th>مدرسه</th>
+                                <th>والدین</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsAdminTableBody">
+                            <!-- Students will be rendered here -->
+                        </tbody>
+                    </table>
+                    <div class="table-pagination">
+                        <button class="btn btn-sm btn-outline" onclick="changePage('students', -1)">قبلی</button>
+                        <span id="studentsPageInfo">صفحه ۱ از ۱۰</span>
+                        <button class="btn btn-sm btn-outline" onclick="changePage('students', 1)">بعدی</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================
+            DRIVERS PAGE
+            ================================ -->
+            <div id="page-drivers" class="page">
+                <div class="page-header">
+                    <h2>مدیریت رانندگان</h2>
+                    <button class="btn btn-primary" onclick="openAddDriverAdminModal()">
+                        <i class="fas fa-plus"></i>
+                        افزودن راننده
+                    </button>
+                </div>
+                
+                <div class="table-container glass-premium">
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <div class="filter-group">
+                            <label>جستجو:</label>
+                            <input type="text" placeholder="نام یا خودرو..." class="filter-input" onkeyup="filterTable('drivers', this.value)">
+                        </div>
+                        <div class="filter-group">
+                            <label>وضعیت:</label>
+                            <select class="filter-select" onchange="filterTable('drivers', null, this.value)">
+                                <option value="all">همه</option>
+                                <option value="active">فعال</option>
+                                <option value="inactive">غیرفعال</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>نام</th>
+                                <th>خودرو</th>
+                                <th>سرویس</th>
+                                <th>امتیاز</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="driversAdminTableBody">
+                            <!-- Drivers will be rendered here -->
+                        </tbody>
+                    </table>
+                    <div class="table-pagination">
+                        <button class="btn btn-sm btn-outline" onclick="changePage('drivers', -1)">قبلی</button>
+                        <span id="driversPageInfo">صفحه ۱ از ۳</span>
+                        <button class="btn btn-sm btn-outline" onclick="changePage('drivers', 1)">بعدی</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================
+            SERVICES PAGE
+            ================================ -->
+            <div id="page-services" class="page">
+                <div class="page-header">
+                    <h2>مدیریت سرویس‌ها</h2>
+                    <button class="btn btn-primary" onclick="openAddServiceAdminModal()">
+                        <i class="fas fa-plus"></i>
+                        ایجاد سرویس
+                    </button>
+                </div>
+                
+                <div class="services-grid" id="adminServicesGrid">
+                    <!-- Services will be rendered here -->
+                </div>
+            </div>
+
+            <!-- ================================
+            REPORTS PAGE
+            ================================ -->
+            <div id="page-reports" class="page">
+                <div id="reportsContainer"></div>
+            </div>
+
+            <!-- ================================
+            SETTINGS PAGE
+            ================================ -->
+            <div id="page-settings" class="page">
+                <div class="page-header">
+                    <h2>تنظیمات سیستم</h2>
+                </div>
+                
+                <div class="settings-grid">
+                    <div class="settings-card glass-premium">
+                        <h3><i class="fas fa-globe" style="color: var(--primary);"></i> تنظیمات عمومی</h3>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>زبان سیستم</span>
+                            </div>
+                            <select id="systemLanguage" onchange="saveSetting('language', this.value)">
+                                <option value="fa">فارسی</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>منطقه زمانی</span>
+                            </div>
+                            <select id="systemTimezone">
+                                <option value="Asia/Tehran">تهران (UTC+3:30)</option>
+                                <option value="UTC">UTC</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>قالب تاریخ</span>
+                            </div>
+                            <select>
+                                <option value="shamsi">شمسی</option>
+                                <option value="miladi">میلادی</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-card glass-premium">
+                        <h3><i class="fas fa-palette" style="color: var(--primary);"></i> ظاهر</h3>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>حالت نمایش</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-sm btn-outline" onclick="switchTheme('light')">روشن</button>
+                                <button class="btn btn-sm btn-outline" onclick="switchTheme('dark')">تاریک</button>
+                                <button class="btn btn-sm btn-outline" onclick="switchTheme('night-blue')">آبی شب</button>
+                                <button class="btn btn-sm btn-outline" onclick="switchTheme('amber')">کهربایی</button>
+                            </div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>اندازه فونت</span>
+                            </div>
+                            <select onchange="changeFontSize(this.value)">
+                                <option value="small">کوچک</option>
+                                <option value="medium" selected>متوسط</option>
+                                <option value="large">بزرگ</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-card glass-premium">
+                        <h3><i class="fas fa-bell" style="color: var(--primary);"></i> اعلان‌ها</h3>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>اعلان‌های سیستم</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked id="systemNotifToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>اعلان‌های ایمیلی</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>اعلان‌های پیامکی</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-card glass-premium">
+                        <h3><i class="fas fa-shield-alt" style="color: var(--primary);"></i> امنیت</h3>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>تغییر رمز عبور</span>
+                            </div>
+                            <button class="btn btn-outline btn-sm" onclick="showToast('لینک تغییر رمز به ایمیل شما ارسال شد', 'info')">
+                                تغییر
+                            </button>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>احراز هویت دو مرحله‌ای</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>جلسات فعال</span>
+                            </div>
+                            <button class="btn btn-outline btn-sm" onclick="showToast('همه جلسات بسته شدند', 'info')">
+                                بستن همه
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="settings-card glass-premium">
+                        <h3><i class="fas fa-database" style="color: var(--primary);"></i> داده‌ها</h3>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>پشتیبان‌گیری</span>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="backupData()">
+                                <i class="fas fa-download"></i> دریافت پشتیبان
+                            </button>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>بازیابی داده‌ها</span>
+                            </div>
+                            <button class="btn btn-outline btn-sm" onclick="document.getElementById('restoreFile').click()">
+                                <i class="fas fa-upload"></i> بازیابی
+                            </button>
+                            <input type="file" id="restoreFile" style="display:none" accept=".json" onchange="restoreData(event)">
+                        </div>
+                        <div class="settings-item" style="border-bottom: none;">
+                            <div class="settings-label" style="color: var(--danger);">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>حذف تمام داده‌ها</span>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="if(confirm('آیا از حذف تمام داده‌ها اطمینان دارید؟ این عمل غیرقابل بازگشت است!')) clearAllData()">
+                                حذف همه
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="settings-card glass-premium">
+                        <h3><i class="fas fa-info-circle" style="color: var(--primary);"></i> اطلاعات سیستم</h3>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>نسخه</span>
+                            </div>
+                            <span>سرویس من ۳.۰.۰</span>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <span>آخرین بروزرسانی</span>
+                            </div>
+                            <span>۲۰۲۶/۰۱/۱۵</span>
+                        </div>
+                        <div class="settings-item" style="border-bottom: none;">
+                            <div class="settings-label">
+                                <span>تعداد کاربران</span>
+                            </div>
+                            <span id="totalUsers">۳,۸۳۵</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================
+    BOTTOM NAVIGATION (Mobile)
+    ========================================== -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="#" class="active" data-page="dashboard">
+            <i class="fas fa-home"></i>
+            <span>خانه</span>
+        </a>
+        <a href="#" data-page="schools">
+            <i class="fas fa-school"></i>
+            <span>مدارس</span>
+        </a>
+        <a href="#" data-page="parents">
+            <i class="fas fa-user-friends"></i>
+            <span>والدین</span>
+        </a>
+        <a href="#" data-page="students">
+            <i class="fas fa-child"></i>
+            <span>دانش‌آموزان</span>
+        </a>
+        <a href="#" data-page="settings">
+            <i class="fas fa-cog"></i>
+            <span>تنظیمات</span>
+        </a>
+    </nav>
+
+    <!-- ==========================================
+    MODALS
+    ========================================== -->
+    
+    <!-- Add School Modal -->
+    <div class="modal" id="addSchoolModal">
+        <div class="modal-overlay" onclick="closeModal('addSchoolModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>افزودن مدرسه جدید</h3>
+                <button class="modal-close" onclick="closeModal('addSchoolModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addSchoolForm" onsubmit="submitAddSchool(event)">
+                <div class="form-group">
+                    <label>نام مدرسه</label>
+                    <input type="text" id="schoolName" placeholder="نام مدرسه" required>
+                </div>
+                <div class="form-group">
+                    <label>کد مدرسه</label>
+                    <input type="text" id="schoolCode" placeholder="SCH-۰۰۱" required>
+                </div>
+                <div class="form-group">
+                    <label>آدرس</label>
+                    <input type="text" id="schoolAddress" placeholder="آدرس کامل" required>
+                </div>
+                <div class="form-group">
+                    <label>شماره تماس</label>
+                    <input type="tel" id="schoolPhone" placeholder="۰۲۱-۱۲۳۴۵۶۷۸">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">افزودن مدرسه</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Parent Modal -->
+    <div class="modal" id="addParentModal">
+        <div class="modal-overlay" onclick="closeModal('addParentModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>افزودن والد جدید</h3>
+                <button class="modal-close" onclick="closeModal('addParentModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addParentForm" onsubmit="submitAddParent(event)">
+                <div class="form-group">
+                    <label>نام و نام خانوادگی</label>
+                    <input type="text" id="parentName" placeholder="نام کامل" required>
+                </div>
+                <div class="form-group">
+                    <label>شماره موبایل</label>
+                    <input type="tel" id="parentPhone" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required pattern="09[0-9]{9}">
+                </div>
+                <div class="form-group">
+                    <label>مدرسه</label>
+                    <select id="parentSchool" required>
+                        <option value="">انتخاب مدرسه...</option>
+                        <option value="دبستان پسرانه شماره ۱">دبستان پسرانه شماره ۱</option>
+                        <option value="دبیرستان دخترانه شماره ۲">دبیرستان دخترانه شماره ۲</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">افزودن والد</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Student Admin Modal -->
+    <div class="modal" id="addStudentAdminModal">
+        <div class="modal-overlay" onclick="closeModal('addStudentAdminModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>افزودن دانش‌آموز جدید</h3>
+                <button class="modal-close" onclick="closeModal('addStudentAdminModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addStudentAdminForm" onsubmit="submitAddStudentAdmin(event)">
+                <div class="form-group">
+                    <label>نام و نام خانوادگی</label>
+                    <input type="text" id="studentAdminName" placeholder="نام دانش‌آموز" required>
+                </div>
+                <div class="form-group">
+                    <label>کلاس</label>
+                    <input type="text" id="studentAdminClass" placeholder="مثال: سوم" required>
+                </div>
+                <div class="form-group">
+                    <label>مدرسه</label>
+                    <select id="studentAdminSchool" required>
+                        <option value="">انتخاب مدرسه...</option>
+                        <option value="دبستان پسرانه شماره ۱">دبستان پسرانه شماره ۱</option>
+                        <option value="دبیرستان دخترانه شماره ۲">دبیرستان دخترانه شماره ۲</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>والدین</label>
+                    <select id="studentAdminParent" required>
+                        <option value="">انتخاب والدین...</option>
+                        <option value="علی رضایی">علی رضایی</option>
+                        <option value="مریم احمدی">مریم احمدی</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">افزودن دانش‌آموز</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Driver Admin Modal -->
+    <div class="modal" id="addDriverAdminModal">
+        <div class="modal-overlay" onclick="closeModal('addDriverAdminModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>افزودن راننده جدید</h3>
+                <button class="modal-close" onclick="closeModal('addDriverAdminModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addDriverAdminForm" onsubmit="submitAddDriverAdmin(event)">
+                <div class="form-group">
+                    <label>نام و نام خانوادگی</label>
+                    <input type="text" id="driverAdminName" placeholder="نام راننده" required>
+                </div>
+                <div class="form-group">
+                    <label>خودرو</label>
+                    <input type="text" id="driverAdminVehicle" placeholder="مثال: سمند - ۱۲۳۴۵" required>
+                </div>
+                <div class="form-group">
+                    <label>سرویس</label>
+                    <select id="driverAdminService">
+                        <option value="">بدون سرویس</option>
+                        <option value="سرویس ۱">سرویس ۱</option>
+                        <option value="سرویس ۲">سرویس ۲</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">افزودن راننده</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Service Admin Modal -->
+    <div class="modal" id="addServiceAdminModal">
+        <div class="modal-overlay" onclick="closeModal('addServiceAdminModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>ایجاد سرویس جدید</h3>
+                <button class="modal-close" onclick="closeModal('addServiceAdminModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addServiceAdminForm" onsubmit="submitAddServiceAdmin(event)">
+                <div class="form-group">
+                    <label>نام سرویس</label>
+                    <input type="text" id="serviceAdminName" placeholder="نام سرویس" required>
+                </div>
+                <div class="form-group">
+                    <label>راننده</label>
+                    <select id="serviceAdminDriver" required>
+                        <option value="">انتخاب راننده...</option>
+                        <option value="علی رضایی">علی رضایی</option>
+                        <option value="محمد کریمی">محمد کریمی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>مسیر</label>
+                    <select id="serviceAdminRoute" required>
+                        <option value="">انتخاب مسیر...</option>
+                        <option value="مسیر شمال">مسیر شمال</option>
+                        <option value="مسیر جنوب">مسیر جنوب</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>مدرسه</label>
+                    <select id="serviceAdminSchool" required>
+                        <option value="">انتخاب مدرسه...</option>
+                        <option value="دبستان پسرانه شماره ۱">دبستان پسرانه شماره ۱</option>
+                        <option value="دبیرستان دخترانه شماره ۲">دبیرستان دخترانه شماره ۲</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">ایجاد سرویس</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Modals -->
+    <div class="modal" id="editSchoolModal">
+        <div class="modal-overlay" onclick="closeModal('editSchoolModal')"></div>
+        <div class="modal-content glass-premium">
+            <div class="modal-header">
+                <h3>ویرایش مدرسه</h3>
+                <button class="modal-close" onclick="closeModal('editSchoolModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editSchoolForm" onsubmit="submitEditSchool(event)">
+                <input type="hidden" id="editSchoolId">
+                <div class="form-group">
+                    <label>نام مدرسه</label>
+                    <input type="text" id="editSchoolName" required>
+                </div>
+                <div class="form-group">
+                    <label>کد مدرسه</label>
+                    <input type="text" id="editSchoolCode" required>
+                </div>
+                <div class="form-group">
+                    <label>آدرس</label>
+                    <input type="text" id="editSchoolAddress" required>
+                </div>
+                <div class="form-group">
+                    <label>وضعیت</label>
+                    <select id="editSchoolStatus">
+                        <option value="active">فعال</option>
+                        <option value="inactive">غیرفعال</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">ذخیره تغییرات</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    TOAST CONTAINER
+    ========================================== -->
+    <div class="toast-container"></div>
+
+    <!-- ==========================================
+    SCRIPTS
+    ========================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/reports.js"></script>
+
+    <style>
+        /* Admin specific styles */
+        .stat-change {
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .stat-change.positive {
+            color: var(--success);
+        }
+        .stat-change.negative {
+            color: var(--danger);
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-group label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .filter-input, .filter-select {
+            padding: 6px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-size: 13px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .filter-input {
+            min-width: 180px;
+        }
+        
+        .table-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        .table-pagination span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .settings-card {
+            padding: 20px;
+        }
+        .settings-card h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .settings-card h3 i {
+            font-size: 18px;
+        }
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        .settings-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .settings-item select {
+            padding: 4px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-family: var(--font-family);
+            font-size: 13px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        .settings-item select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .service-card {
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .service-header h4 {
+            margin: 0;
+        }
+        .service-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .service-info p {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            margin: 0;
+        }
+        .service-info i {
+            color: var(--primary);
+            width: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-group {
+                flex-wrap: wrap;
+            }
+            .filter-input {
+                min-width: 120px;
+                width: 100%;
+            }
+            .page-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            .page-header .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 800);
+            
+            // Init admin dashboard
+            if (typeof initAdminDashboard === 'function') {
+                initAdminDashboard();
+            }
+        });
+        
+        // Global functions for admin
+        function filterTable(table, search, status) {
+            // Will be implemented in admin.js
+            if (window.filterAdminTable) {
+                window.filterAdminTable(table, search, status);
+            }
+        }
+        
+        function sortTable(table, field) {
+            if (window.sortAdminTable) {
+                window.sortAdminTable(table, field);
+            }
+        }
+        
+        function changePage(table, direction) {
+            if (window.changeAdminPage) {
+                window.changeAdminPage(table, direction);
+            }
+        }
+        
+        function exportData(type) {
+            showToast(`در حال خروجی گرفتن از ${type}...`, 'info');
+            setTimeout(() => {
+                showToast('خروجی با موفقیت تهیه شد ✅', 'success');
+            }, 1500);
+        }
+        
+        function refreshActivities() {
+            showToast('در حال بروزرسانی فعالیت‌ها...', 'info');
+            setTimeout(() => {
+                if (window.loadAdminActivities) {
+                    window.loadAdminActivities();
+                }
+                showToast('فعالیت‌ها بروزرسانی شدند ✅', 'success');
+            }, 1000);
+        }
+        
+        function backupData() {
+            showToast('در حال تهیه پشتیبان...', 'info');
+            setTimeout(() => {
+                const data = {
+                    version: '3.0.0',
+                    date: new Date().toISOString(),
+                    stats: {
+                        schools: 150,
+                        parents: 1200,
+                        students: 2500,
+                        drivers: 85
+                    }
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('پشتیبان با موفقیت دریافت شد ✅', 'success');
+            }, 1500);
+        }
+        
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    showToast('داده‌ها با موفقیت بازیابی شدند ✅', 'success');
+                } catch (error) {
+                    showToast('فایل نامعتبر است ❌', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function clearAllData() {
+            showToast('تمام داده‌ها با موفقیت حذف شدند', 'error');
+        }
+        
+        function saveSetting(key, value) {
+            localStorage.setItem(`setting_${key}`, value);
+            showToast('تنظیمات ذخیره شد ✅', 'success');
+        }
+        
+        function changeFontSize(size) {
+            document.body.style.fontSize = size === 'small' ? '14px' : size === 'large' ? '18px' : '16px';
+            localStorage.setItem('font_size', size);
+            showToast('اندازه فونت تغییر کرد', 'info');
+        }
+        
+        // Modal functions
+        function openAddSchoolModal() { openModal('addSchoolModal'); }
+        function openAddParentModal() { openModal('addParentModal'); }
+        function openAddStudentAdminModal() { openModal('addStudentAdminModal'); }
+        function openAddDriverAdminModal() { openModal('addDriverAdminModal'); }
+        function openAddServiceAdminModal() { openModal('addServiceAdminModal'); }
+        
+        // Form submissions (will be implemented in admin.js)
+        function submitAddSchool(e) { e.preventDefault(); closeModal('addSchoolModal'); showToast('مدرسه با موفقیت اضافه شد ✅', 'success'); }
+        function submitAddParent(e) { e.preventDefault(); closeModal('addParentModal'); showToast('والد با موفقیت اضافه شد ✅', 'success'); }
+        function submitAddStudentAdmin(e) { e.preventDefault(); closeModal('addStudentAdminModal'); showToast('دانش‌آموز با موفقیت اضافه شد ✅', 'success'); }
+        function submitAddDriverAdmin(e) { e.preventDefault(); closeModal('addDriverAdminModal'); showToast('راننده با موفقیت اضافه شد ✅', 'success'); }
+        function submitAddServiceAdmin(e) { e.preventDefault(); closeModal('addServiceAdminModal'); showToast('سرویس با موفقیت ایجاد شد ✅', 'success'); }
+        function submitEditSchool(e) { e.preventDefault(); closeModal('editSchoolModal'); showToast('تغییرات با موفقیت ذخیره شد ✅', 'success'); }
+        
+        // Edit functions
+        function editSchool(id) {
+            // In real app, load data and open modal
+            document.getElementById('editSchoolId').value = id;
+            document.getElementById('editSchoolName').value = 'دبستان پسرانه شماره ۱';
+            document.getElementById('editSchoolCode').value = 'SCH-001';
+            document.getElementById('editSchoolAddress').value = 'تهران، خیابان ولیعصر';
+            document.getElementById('editSchoolStatus').value = 'active';
+            openModal('editSchoolModal');
+        }
+        
+        function deleteSchool(id) {
+            if (confirm('آیا از حذف این مدرسه اطمینان دارید؟')) {
+                showToast('مدرسه با موفقیت حذف شد', 'success');
+            }
+        }
+        
+        function deleteParent(id) {
+            if (confirm('آیا از حذف این والد اطمینان دارید؟')) {
+                showToast('والد با موفقیت حذف شد', 'success');
+            }
+        }
+        
+        function deleteStudent(id) {
+            if (confirm('آیا از حذف این دانش‌آموز اطمینان دارید؟')) {
+                showToast('دانش‌آموز با موفقیت حذف شد', 'success');
+            }
+        }
+        
+        function deleteDriver(id) {
+            if (confirm('آیا از حذف این راننده اطمینان دارید؟')) {
+                showToast('راننده با موفقیت حذف شد', 'success');
+            }
+        }
+        
+        function deleteService(id) {
+            if (confirm('آیا از حذف این سرویس اطمینان دارید؟')) {
+                showToast('سرویس با موفقیت حذف شد', 'success');
+            }
+        }
+    </script>
+</body>
+</html>

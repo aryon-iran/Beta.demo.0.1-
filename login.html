@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ورود | سرویس من</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="ورود به پنل سرویس من - سرویس مدرسه، هوشمندتر از همیشه">
+    <meta name="theme-color" content="#4F46E5">
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body class="auth-page">
+    <!-- ==========================================
+    PRELOADER
+    ========================================== -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <i class="fas fa-bus"></i>
+                <span>سرویس من</span>
+            </div>
+            <div class="spinner-ring"></div>
+            <p class="preloader-text">در حال بارگذاری...</p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    PARTICLES BACKGROUND
+    ========================================== -->
+    <div id="particles-js" class="particles-bg"></div>
+
+    <!-- ==========================================
+    AUTH CONTAINER
+    ========================================== -->
+    <div class="auth-container">
+        <div class="auth-card glass-premium" data-aos="fade-up">
+            <!-- Brand -->
+            <div class="auth-brand">
+                <div class="auth-logo">
+                    <i class="fas fa-bus"></i>
+                    <span>سرویس من</span>
+                </div>
+                <p class="auth-slogan">سرویس مدرسه، هوشمندتر از همیشه</p>
+            </div>
+
+            <!-- Header -->
+            <div class="auth-header">
+                <h2>خوش آمدید 👋</h2>
+                <p>برای ورود، شماره موبایل و رمز عبور خود را وارد کنید</p>
+            </div>
+
+            <!-- Form -->
+            <form id="loginForm" class="auth-form" novalidate>
+                <!-- Phone -->
+                <div class="form-group">
+                    <label for="phone">
+                        <i class="fas fa-phone"></i>
+                        شماره موبایل
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            placeholder="۰۹۱۲۳۴۵۶۷۸۹" 
+                            required
+                            pattern="09[0-9]{9}"
+                            maxlength="11"
+                            autocomplete="tel"
+                            class="form-input"
+                        >
+                        <span class="input-icon"><i class="fas fa-mobile-alt"></i></span>
+                    </div>
+                    <div class="form-error" id="phoneError">لطفاً شماره موبایل معتبر وارد کنید</div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        رمز عبور
+                    </label>
+                    <div class="password-input">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="رمز عبور خود را وارد کنید" 
+                            required
+                            minlength="6"
+                            autocomplete="current-password"
+                            class="form-input"
+                        >
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="form-error" id="passwordError">رمز عبور باید حداقل ۶ کاراکتر باشد</div>
+                </div>
+
+                <!-- Options -->
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe">
+                        <span class="checkmark"></span>
+                        <span>مرا به خاطر بسپار</span>
+                    </label>
+                    <a href="#" class="forgot-password" onclick="showToast('لینک بازیابی رمز عبور به ایمیل شما ارسال شد', 'info')">
+                        فراموشی رمز عبور؟
+                    </a>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="loginBtn">
+                    <span class="btn-text">ورود</span>
+                    <div class="spinner hidden"></div>
+                </button>
+
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>یا</span>
+                </div>
+
+                <!-- Guest Login -->
+                <button type="button" class="btn btn-outline btn-block" onclick="guestLogin()">
+                    <i class="fas fa-user"></i>
+                    ورود به عنوان مهمان
+                </button>
+
+                <!-- Footer -->
+                <div class="auth-footer">
+                    <p>حساب کاربری ندارید؟ <a href="register.html">ثبت‌نام کنید</a></p>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer info -->
+        <div class="auth-bottom">
+            <p>نسخه ۳.۰ | © ۲۰۲۶ سرویس من</p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    TOAST CONTAINER
+    ========================================== -->
+    <div class="toast-container"></div>
+
+    <!-- ==========================================
+    SCRIPTS
+    ========================================== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+
+    <style>
+        /* Additional auth styles */
+        .auth-bottom {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+        
+        .auth-brand {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .auth-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .auth-logo i {
+            font-size: 32px;
+        }
+        
+        .auth-slogan {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 16px;
+        }
+        
+        .input-wrapper input {
+            padding-left: 44px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-family);
+            font-size: 15px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all var(--transition-base);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+        
+        .form-input.error {
+            border-color: var(--danger);
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide preloader
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 600);
+            
+            // Init AOS
+            AOS.init({
+                duration: 600,
+                once: true
+            });
+            
+            // Init particles
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', {
+                    particles: {
+                        number: { value: 40, density: { enable: true, value_area: 800 } },
+                        color: { value: '#4F46E5' },
+                        opacity: { value: 0.3, random: true },
+                        size: { value: 2, random: true },
+                        line_linked: { enable: true, distance: 150, color: '#4F46E5', opacity: 0.2, width: 1 },
+                        move: { enable: true, speed: 1, direction: 'none', random: false, straight: false }
+                    },
+                    interactivity: {
+                        events: { onhover: { enable: true, mode: 'grab' } }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
